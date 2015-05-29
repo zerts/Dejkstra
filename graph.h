@@ -41,44 +41,37 @@ public:
                 return true;
         return false;
     }
+    std::vector <long long> countDistances(size_t start)
+    {
+        std::set <std::pair <long long, size_t> > setWithDistances;
+        std::vector <long long> distance(size, INF);
+        distance[start] = 0;
+        setWithDistances.insert(std::make_pair(distance[start], start));
+        while (!setWithDistances.empty())
+        {
+            size_t curr = setWithDistances.begin()->second;
+            setWithDistances.erase(setWithDistances.begin());
+            for (size_t j = 0; j < gr[curr].size(); ++j)
+            {
+                size_t next = gr[curr][j].second;
+                long long lengthOfCurrEdge = gr[curr][j].getDistance(distance[curr]);
+                if (lengthOfCurrEdge < INF && distance[curr] + lengthOfCurrEdge < distance[next])
+                {
+                    setWithDistances.erase(std::make_pair(distance[next], next));
+                    distance[next] = distance[curr] + lengthOfCurrEdge;
+                    setWithDistances.insert(std::make_pair(distance[next], next));
+                }
+            }
+        }
+        return distance;
+    }
     long long dejkstra(size_t start, size_t finish)
     {
         if (start >= size || finish >= size)
             return -1;
-        std::set <std::pair <long long, size_t> > setWithDistances;
-        std::vector <long long> distance(size + 1, INF);
-        for (size_t i = 0; i < size; i++)
-        {
-            if (i == start)
-                setWithDistances.insert(std::make_pair(0, i));
-            else
-                setWithDistances.insert(std::make_pair(INF, i));
-        }
-        distance[start] = 0;
-        for (size_t i = 0; i < size; i++)
-        {
-            size_t curr = setWithDistances.begin()->second;
-            distance[curr] = setWithDistances.begin()->first;
-            if (distance[curr] == INF)
-                break;
-            for (size_t j = 0; j < gr[curr].size(); j++)
-            {
-                std::set <std::pair <long long, size_t> >::iterator it;
-                it = setWithDistances.find(std::make_pair(distance[gr[curr][j].second], gr[curr][j].second));
-                if (it == setWithDistances.end())
-                    continue;
-                if (it->first > distance[curr] + gr[curr][j].getDistance(distance[curr]))
-                {
-                    size_t next = it->second;
-                    distance[next] = distance[curr] + gr[curr][j].getDistance(distance[curr]);
-                    setWithDistances.erase(it);
-                    setWithDistances.insert(std::make_pair(distance[next], next));
-                }
-            }
-            setWithDistances.erase(setWithDistances.begin());
-        }
-        if (distance[finish] == INF)
-            return -1ll;
+        std::vector <long long> distance = countDistances(start);
+        if (distance[finish] >= INF)
+            return INF;
         else
             return distance[finish];
     }
@@ -86,40 +79,12 @@ public:
     {
         if (start >= size)
             return;
-        std::set <std::pair <long long, size_t> > setWithDistances;
-        std::vector <long long> distance(size + 1, INF);
-        for (size_t i = 0; i < size; i++)
-        {
-            if (i == start)
-                setWithDistances.insert(std::make_pair(0, i));
-            else
-                setWithDistances.insert(std::make_pair(INF, i));
-        }
-        distance[start] = 0;
-        for (size_t i = 0; i < size; i++)
-        {
-            size_t curr = setWithDistances.begin()->second;
-            distance[curr] = setWithDistances.begin()->first;
-            if (distance[curr] == INF)
-                break;
-            for (size_t j = 0; j < gr[curr].size(); j++)
-            {
-                std::set <std::pair <long long, size_t> >::iterator it;
-                it = setWithDistances.find(std::make_pair(distance[gr[curr][j].second], gr[curr][j].second));
-                if (it == setWithDistances.end())
-                    continue;
-                if (it->first > distance[curr] + gr[curr][j].getDistance(distance[curr]))
-                {
-                    size_t next = it->second;
-                    distance[next] = distance[curr] + gr[curr][j].getDistance(distance[curr]);
-                    setWithDistances.erase(it);
-                    setWithDistances.insert(std::make_pair(distance[next], next));
-                }
-            }
-            setWithDistances.erase(setWithDistances.begin());
-        }
+        std::vector <long long> distance = countDistances(start);
         for (int i = 0; i < size; i++)
-            std::cout << distance[i] << " ";
+            if (distance[i] < INF)
+                std::cout << distance[i] << ' ';
+            else
+                std::cout << "2009000999 ";
         std::cout << std::endl;
     }
 };
