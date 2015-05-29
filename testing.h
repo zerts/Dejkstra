@@ -1,6 +1,8 @@
 #include <iostream>
 #include "graph.h"
-#include "edge.h"
+#include "Edge.h"
+
+const long long INF = LLONG_MAX / 2;
 
 const size_t NUMBER_OF_TESTS_OF_GRAPH_WITH_CURRENT_SIZE = 4;
 
@@ -38,50 +40,56 @@ public:
 class BusEdge : public Edge
 {
 public:
-    long long timeOfRide, timeOfBegin;
-    const long long INF = LLONG_MAX / 2;
+    long long timeOfEnd, timeOfBegin;
     BusEdge(){};
-    BusEdge(size_t _first, size_t _second, long long _timeOfBegin, long long _timeOfRide)
+    BusEdge(size_t _first, size_t _second, long long _timeOfBegin, long long _timeOfEnd)
     {
         first = _first;
         second = _second;
-        timeOfRide = _timeOfRide;
+        timeOfEnd = _timeOfEnd;
         timeOfBegin = _timeOfBegin;
     }
     long long getDistance(long long currDistance)
     {
         if (currDistance <= timeOfBegin)
-            return timeOfBegin + timeOfRide;
+            return timeOfEnd - currDistance;
         else
             return INF;
     }
     void generateEdge(size_t numberOfVertex)
     {
         std::pair <size_t, size_t> edge = genPairOfVertexes(numberOfVertex);
-        long long _timeOfBegin = rand(), _timeOfRide = rand();
-        BusEdge(edge.first, edge.second, _timeOfBegin, _timeOfRide);        
+        long long _timeOfBegin = rand(), _timeOfEnd = rand();
+        BusEdge(edge.first, edge.second, _timeOfBegin, _timeOfEnd);
     }
 };
 
-class MyEdge : public Edge
+long long weightOfCar;
+
+class CupEdge : public Edge
 {
-    long long weightOfEdge;
-    MyEdge(){};
-    MyEdge(size_t _first, size_t _second, long long _weightOfEdge)
+public:
+    long long weightOfEdge, maxWeightOfCar;
+    CupEdge(){};
+    CupEdge(size_t _first, size_t _second, long long _weightOfEdge, long long _maxWeightOfCar)
     {
         first = _first;
         second = _second;
         weightOfEdge = _weightOfEdge;
+        maxWeightOfCar = _maxWeightOfCar;
     }
     long long getDistance(long long currDistance)
     {
-        return weightOfEdge;
+        if (weightOfCar <= maxWeightOfCar)
+            return weightOfEdge;
+        else
+            return INF;
     }
     void generateEdge(size_t numberOfVertex)
     {
         std::pair <size_t, size_t> edge = genPairOfVertexes(numberOfVertex);
-        long long _weight = rand();
-        MyEdge(edge.first, edge.second, _weight);
+        long long _weight = rand(), _maxWeightOfCar = rand() + 3000000ll;
+        CupEdge(edge.first, edge.second, _weight, _maxWeightOfCar);
     }
 };
 
