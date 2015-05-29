@@ -71,7 +71,7 @@ public:
             return -1;
         std::vector <long long> distance = countDistances(start);
         if (distance[finish] >= INF)
-            return INF;
+            return -1ll;
         else
             return distance[finish];
     }
